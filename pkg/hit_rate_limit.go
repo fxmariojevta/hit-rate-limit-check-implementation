@@ -7,7 +7,7 @@ type RateLimiter struct {
 	hitLimit    int           // The maximum number of allowed hits per window
 	maxHitLimit int           // The current remaining hits in the window
 	window      time.Duration // The duration of the rate limit window (in seconds)
-	isReset     bool          // Indicates if the reset timer has been set
+	startTime   time.Time
 }
 
 // NewRateLimiter creates and returns a new RateLimiter.
@@ -23,7 +23,6 @@ func NewRateLimiter(hitLimit int, window time.Duration) *RateLimiter {
 		hitLimit:    hitLimit,
 		maxHitLimit: hitLimit,
 		window:      window,
-		isReset:     false,
 	}
 }
 
@@ -32,13 +31,7 @@ func NewRateLimiter(hitLimit int, window time.Duration) *RateLimiter {
 // No input parameters. No return value.
 func (r *RateLimiter) ResetHitRateLimit() {
 	r.maxHitLimit = r.hitLimit
-}
-
-// ResetIsReset sets the isReset flag to false, allowing the rate limiter to schedule a new reset timer.
-//
-// No input parameters. No return value.
-func (r *RateLimiter) ResetIsReset() {
-	r.isReset = false
+	r.startTime = time.Time{}
 }
 
 // IsHitRateLimit checks if the rate limit has been reached.
@@ -50,10 +43,10 @@ func (r *RateLimiter) ResetIsReset() {
 // Returns:
 //   - bool: true if the rate limit is reached, false otherwise
 func (r *RateLimiter) IsHitRateLimit() bool {
-	if !r.isReset {
-		time.AfterFunc(r.window*time.Second, r.ResetHitRateLimit)
-		time.AfterFunc(r.window*time.Second, r.ResetIsReset)
-		r.isReset = true
+	if r.startTime.IsZero() {
+		r.startTime = time.Now()
+	} else if time.Since(r.startTime) >= r.window*time.Second {
+		r.ResetHitRateLimit()
 	}
 
 	if r.maxHitLimit-1 >= 0 {
@@ -80,13 +73,4 @@ func (r *RateLimiter) GetHitLimit() int {
 //   - int: the remaining hit count
 func (r *RateLimiter) GetMaxHitLimit() int {
 	return r.maxHitLimit
-}
-
-// GetIsReset returns whether the reset timer has been set.
-//
-// No input parameters.
-// Returns:
-//   - bool: true if the reset timer is set, false otherwise
-func (r *RateLimiter) GetIsReset() bool {
-	return r.isReset
 }

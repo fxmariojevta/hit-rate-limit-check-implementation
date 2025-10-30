@@ -27,21 +27,8 @@ func TestResetHitRateLimit(t *testing.T) {
 	}
 }
 
-func TestResetIsReset(t *testing.T) {
-	rl := pkg.NewRateLimiter(3, 1)
-	// Trigger isReset to true
-	rl.IsHitRateLimit()
-	if !rl.GetIsReset() {
-		t.Errorf("Setup failed: expected isReset to be true")
-	}
-	rl.ResetIsReset()
-	if rl.GetIsReset() {
-		t.Errorf("ResetIsReset failed: expected false, got true")
-	}
-}
-
 func TestIsHitRateLimit(t *testing.T) {
-	rl := pkg.NewRateLimiter(2, 0) // window=0 for immediate reset
+	rl := pkg.NewRateLimiter(2, 1) // window=0 for immediate reset
 	// First call, should not hit limit
 	if rl.IsHitRateLimit() {
 		t.Error("IsHitRateLimit failed: should not hit limit on first call")
