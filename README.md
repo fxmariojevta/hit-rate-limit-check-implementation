@@ -26,7 +26,7 @@ make gorun
 Using Go directly:
 
 ```bash
-go run ./cmd/
+go run ./cmd/app
 ```
 
 ### Running Tests
@@ -58,7 +58,7 @@ make gobuild
 Using Go directly:
 
 ```bash
-go build ./cmd
+go build ./cmd/app
 ```
 
 The compiled binary will be created in the `cmd/` directory.

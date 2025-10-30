@@ -5,4 +5,4 @@ gotest:
 	go test ./tests
 
 gobuild:
-	go build ./cmd
+	go build ./cmd/app
