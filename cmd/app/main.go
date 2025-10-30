@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	const Window = 4 * time.Second // Convert to time.Duration
-	const HitLimit = 2
+	const Window = 5 * time.Second // Convert to time.Duration
+	const HitLimit = 5
 	const BlockedLimit = 10
 	blockedCount := 0
 	i := 0
@@ -31,6 +31,6 @@ func main() {
 			break
 		}
 
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	}
 }

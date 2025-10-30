@@ -33,10 +33,14 @@ func NewRateLimiter(hitLimit int, window time.Duration) *RateLimiter {
 	}
 }
 
-// IsHitRateLimit checks if the rate limit has been reached.
+// IsHitRateLimit checks if the rate limit has been reached using token bucket algorithm.
 //
-// Implements a fixed window rate limiter.
-// Each window allows up to hitLimit requests.
+// The token bucket algorithm works as follows:
+// 1. Tokens are added to the bucket at a constant rate (refillRate)
+// 2. The bucket has a maximum capacity (hitLimit)
+// 3. Each request consumes one token
+// 4. If a token is available, the request is allowed
+// 5. If no tokens are available, the request is rate limited
 //
 // Returns:
 //   - bool: true if the rate limit is reached, false otherwise
@@ -47,18 +51,17 @@ func (r *RateLimiter) IsHitRateLimit() bool {
 	now := time.Now()
 	elapsed := now.Sub(r.lastRefill)
 
-	// Reset window if enough time has passed
-	if elapsed >= r.window {
+	r.tokens += elapsed.Seconds() * r.refilRate
+	if r.tokens > float64(r.hitLimit) {
 		r.tokens = float64(r.hitLimit)
-		r.lastRefill = now
 	}
 
-	// Check if we have tokens available
+	r.lastRefill = now
+
 	if r.tokens < 1 {
-		return true // Rate limit reached
+		return true
 	}
 
-	// Consume a token
 	r.tokens--
 	return false
 }
