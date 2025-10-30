@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	const Window = 4
-	const HitLimit = 5
-	const BlockedLimit = 4
+	const Window = 4 * time.Second // Convert to time.Duration
+	const HitLimit = 2
+	const BlockedLimit = 10
 	blockedCount := 0
 	i := 0
 	startTime := time.Now()

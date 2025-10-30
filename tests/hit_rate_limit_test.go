@@ -2,6 +2,7 @@ package tests
 
 import (
 	"testing"
+	"time"
 
 	"github.com/fxmariojevta/hit-rate-limit-check-implementation/pkg"
 )
@@ -18,17 +19,19 @@ func TestResetHitRateLimit(t *testing.T) {
 	// Decrement maxHitLimit to simulate usage
 	rl.IsHitRateLimit()
 	rl.IsHitRateLimit()
-	if rl.GetMaxHitLimit() != 1 {
-		t.Errorf("Setup failed: expected maxHitLimit to be 1, got %d", rl.GetMaxHitLimit())
+	if rl.GetCurrentHitLimit() != 1 {
+		t.Errorf("Setup failed: expected maxHitLimit to be 1, got %d", rl.GetCurrentHitLimit())
 	}
-	rl.ResetHitRateLimit()
-	if rl.GetMaxHitLimit() != rl.GetHitLimit() {
-		t.Errorf("ResetHitRateLimit failed: expected %d, got %d", rl.GetHitLimit(), rl.GetMaxHitLimit())
+	time.Sleep(1 * time.Second) // Wait for window to reset
+	rl.IsHitRateLimit()
+	rl.IsHitRateLimit()
+	if rl.GetCurrentHitLimit() != 1 {
+		t.Errorf("Setup failed: expected maxHitLimit to be 1, got %d", rl.GetCurrentHitLimit())
 	}
 }
 
 func TestIsHitRateLimit(t *testing.T) {
-	rl := pkg.NewRateLimiter(2, 1) // window=0 for immediate reset
+	rl := pkg.NewRateLimiter(2, 1)
 	// First call, should not hit limit
 	if rl.IsHitRateLimit() {
 		t.Error("IsHitRateLimit failed: should not hit limit on first call")
