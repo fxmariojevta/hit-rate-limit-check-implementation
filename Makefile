@@ -1,5 +1,5 @@
 gorun:
-	go run ./cmd
+	go run ./cmd/app
 
 gotest:
 	go test ./tests
